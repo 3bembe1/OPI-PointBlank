@@ -1,0 +1,43 @@
+sequenceDiagram
+    autonumber
+    actor Guest as Гість
+    participant UI as Інтерфейс (UI)
+    participant Auth as Сервіс авторизації
+    participant Google as Google API
+    participant DB as База даних
+
+    Note over Guest, UI: Користувач ініціює вхід
+    Guest->>UI: Натиснути "Увійти через Google"
+    activate UI
+    
+    UI->>Auth: Запит на отримання URL авторизації
+    activate Auth
+    Auth-->>UI: Повернення сформованого URL
+    deactivate Auth
+
+    UI->>Google: Перенаправлення користувача
+    activate Google
+    Google-->>Guest: Відображення форми входу
+    Guest->>Google: Введення облікових даних
+    Google->>Auth: Передача токену авторизації
+    deactivate Google
+
+    activate Auth
+    Auth->>Auth: Валідація отриманого токену
+    
+    alt Успішна валідація
+        Auth->>DB: Пошук або створення профілю
+        activate DB
+        DB-->>Auth: Підтвердження збереження
+        deactivate DB
+        
+        Auth-->>UI: Токен доступу (JWT) та статус OK
+        UI-->>Guest: Перехід до функцій AuthUser
+    else Помилка валідації
+        Auth-->>UI: Повідомлення про помилку (Invalid Token)
+        UI-->>Guest: Повідомлення "Спробуйте ще раз"
+    end
+    
+    deactivate Auth
+    deactivate UI
+  
