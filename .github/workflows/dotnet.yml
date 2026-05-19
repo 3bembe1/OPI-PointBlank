@@ -1,0 +1,35 @@
+name: .NET Unit Tests
+
+# Запускать этот скрипт при каждом push или pull request в ветку main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest # Используем последнюю версию Ubuntu для тестов
+
+    steps:
+    
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x' # Укажите версию из вашего проекта
+
+    
+    - name: Restore dependencies
+      run: dotnet restore "LAB-3_Unit Testing/Lab-3 OPI/Lab-3 OPI.slnx"
+
+    
+    - name: Build
+      run: dotnet build "LAB-3_Unit Testing/Lab-3 OPI/Lab-3 OPI.slnx" --no-restore
+
+    
+    - name: Test
+      run: dotnet test "LAB-3_Unit Testing/Lab-3 OPI/Lab-3 OPI.slnx" --no-build --verbosity normal
